@@ -1,0 +1,89 @@
+.\"	toc.tmac -- table of contents
+.\"
+.\"
+.
+.if !d TOC .ds TOC "Table of Contents
+..
+.de toc@start
+.if !'\\n[.z]'toc-div' \{\
+.	da toc-div
+.	ev toc
+.\}
+.if \\n[.$]>0 \
+.	toc@entry "\\$1" "\\$2"
+..
+.de toc@mark
+.if \\n[.$]>0 \{\
+.	ev toc-mark
+.	di toc-mark
+.	pr@reset
+\&\\$1
+.	br
+.	di
+.	chop toc-mark
+.	ev
+.	ti -(\\n[dl]u+1n)u
+\\*[toc-mark]\h'|\\n[dl]u+1n'\c
+.	rm toc-mark
+.\}
+..
+.de toc@entry
+.ie '\\n[.z]'toc-div' \{\
+.	if d toc-pgno \
+.		toc@entry-end
+.	ie \\n[.$] \{\
+.		if '\\$1'no' \
+.			ds toc-pgno
+.		if !'\\$1'no' \
+.			ds toc-pgno "\\$1
+.	\}
+.	el \
+.		ds toc-pgno \\n%
+.	pr@reset
+.	br
+.\"	hy 16
+.\"	na
+.	ll -4n
+.\"	in +(u;0\\$2)
+.	in +(u;0\\$2)
+.\}
+.el \
+.	tm \\n(.F:\\n(.c: \\$0: needs toc@start before
+..
+.de toc@end
+.ie '\\n[.z]'toc-div' \{\
+.	if d toc-pgno \
+.		toc@entry-end
+.	di
+.	ev
+.\}
+.el \
+.	tm \\n(.F:\\n(.c: \\$0: needs toc@start before
+..
+.de toc@entry-end
+\\a\\t\\*[toc-pgno]
+.br
+.rm toc-pgno
+..
+.de toc@print
+.ev toc
+.pr@reset
+.ce 1
+.ps +4
+\fB\\*[TOC]\fP
+.pr@reset
+.\"in 0
+.sp 2v
+.char \[toc-lc] .\h'1n'
+.lc \[toc-lc]
+.nf
+.ta (u;\\n(.l-\\n(.i-\w'000') (u;\\n(.l-\\n(.i)R
+.ns
+.toc-div
+.ev
+..
+.als TC toc@print
+.als XS toc@start
+.als XA toc@entry
+.als XE toc@end
+.als XM toc@mark

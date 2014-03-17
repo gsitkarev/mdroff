@@ -1,0 +1,59 @@
+.\"	d.tmac -- troff MD macros
+.\" 
+.\"	2013 (c) Grigoriy A. Sitkarev, <sitkarev@komitex.ru>
+.\"
+.\"
+.\"
+.
+.mso pg.tmac
+.mso h.tmac
+.mso pr.tmac
+.mso doc.tmac
+.mso toc.tmac
+.mso fn.tmac
+.mso font.tmac
+.mso keep.tmac
+.
+.de IZ
+.if !rPO .nr PO \\n(.o
+.if !rLL .nr LL \\n(.l
+.ll \\n[LL]u
+.ie !rLT \{\
+.	lt \\n[LL]u
+.	nr LT \\n[LL]
+.\}
+.el \
+.	lt \\n[LT]u
+.if !rPS .nr PS 12
+.ie \\n[PS]>1000 \
+.	ps (\\n[PS]u/1000u)*1p
+.el \
+.	ps \\n[PS]p
+.ie rVS \{\
+.	ie \\n[VS]>1000 \
+.		vs (\\[VS]u/1000u)*1p
+.	el \
+.		vs \\n[VS]p
+.\}
+.el \{\
+.	ie \\n[PS]>1000 \
+.		vs ((\\n[PS]u+2000u)/1000u)*1p
+.	el \
+.		vs \\n[PS]p+2p
+.	nr VS (u;\\n[.v]/1000)
+.\}
+.if !r HM .nr HM 2c
+.if !r FM .nr FM 3c
+.if !r HY .nr HY 14
+.hy \\n[HY]
+.TA
+.if !r PI .nr PI 3n
+.if !r PQ .nr PQ 5n
+.if !r HI .nr HI 0n
+.rm IZ
+..
+.de TA
+.ta T 8n
+..
+.IZ
+.pg@init

@@ -1,0 +1,225 @@
+#!/bin/sh
+
+reffile="mdroff.ref"
+tocfile="mdroff.toc"
+pgnfile="mdroff.pgn"
+MDTMACPATH="tmac/"
+GROFFOPTS="-Tps -dpaper=a4 -md -mru"
+FIFO="/tmp/.mdroff-post$$"
+
+mdpost()
+{
+    awk -v reffile="$reffile" -v pgnfile="$pgnfile" '
+/^LA:[ \t]/ {
+	_FS = FS
+	FS = "\t"
+	$0 = $0
+	printf "%s\t%s\t%s\t%s\n", $2, $3, $4, $5 >> reffile
+	FS = _FS
+	next
+}
+
+/^NH:[ \t]/ {
+	FS_prev = FS
+	FS = "\t"
+	$0 = $0
+	printf "%s\t%s\n", $2, $3 >> pgnfile
+	FS = FS_prev
+	next
+}
+
+{
+	print $0
+}'
+}
+
+mdpre()
+{
+    awk -v reffile="$reffile" -v tocfile="$tocfile" -v pgnfile="$pgnfile" '
+BEGIN {
+	QUOTE = "\""
+	SLASH = "\\"
+	tocfile_sourced = 0
+
+	H1 = 0; H2 = 0; H3 = 0; H4 = 0
+
+	system("touch " reffile)
+
+	_FS = FS
+	FS = "\t"
+	
+	while ((getline < reffile) > 0) {
+		if (NF < 4)
+			continue
+		name = $1
+		mdref[name, "text"] = $2
+		mdref[name, "page"] = $3
+		mdref[name, "chapter"] = $4
+	}
+
+	close(reffile)
+	system("rm -f " reffile)
+
+	while ((getline < pgnfile) > 0) {
+		if (NF < 2)
+			continue
+		h = $1; page = $2
+		tocpg[h] = page
+	}
+
+	close(pgnfile);
+	system("rm -f " pgnfile)
+
+	FS = _FS
+}
+
+/^.TC[ \t]*/ {
+	if (tocfile_sourced) {
+		print ".TC"
+	} else {
+		system("touch " tocfile)
+		print ".so " tocfile
+		#system("rm -f " tocfile)
+		tocfile_sourced = 1
+		print ".TC"
+	}
+	next
+}
+
+/^.LA / {
+	if ($2 == "g") {
+		name = $3
+		print ".ds label-name " name
+		if ((name, "text") in mdref) {
+			print ".ds label-text \"" mdref[name, "text"]
+			print ".nr label-page " mdref[name, "page"]
+			print ".nr label-chapter " mdref[name, "chapter"]
+		} else {
+			print ".tm \\n(.F:\\n(.c: Warning! Label `" name "'\'' is not defined!"
+		}
+	} else if ($2 == "s") {
+		printf ".tm LA:\t%s\t%s\t\\n%\t\\n[H1]\n", $3, $4
+	}
+}
+
+/^\.H[1-4] / {
+
+	print $0
+
+	level = substr($1, 3)+0
+
+	if (level == 1) {
+		H1++
+		H2 = 0
+		HS = H1
+	} else if (level == 2) {
+		H2++
+		HS = H1 "." H2
+	}
+	HS = HS "."
+
+	if (level <= 2)
+		printf ".tm NH:\t\\*[HS]\t\\n[%]\n"
+
+	$1 = ""
+	FS_prev = FS
+	FS = ""
+	$0 = $0
+	line = ""
+	quote = 0
+	sep = 0
+	
+	for (i = 1; i <= NF; i++) {
+		if (quote) {
+			for ( ; i <= NF; i++) {
+				if ($i == SLASH && $(i+1) == QUOTE) {
+					line = line QUOTE
+					i += 1
+					continue
+				}
+				if ($i == QUOTE) {
+					quote = 0
+					line = line " "
+					break
+				}
+				line = line $i
+			}
+		} else {
+			while ($i == " ")
+				i++
+			for ( ; i <= NF; i++) {
+				if ($i == SLASH && $(i+1) == QUOTE) {
+					line = line QUOTE
+					i += 1
+					continue
+				}
+				if ($i == " ") {
+					line = line " "
+					sep = 1
+					break
+				}
+				if ($i == QUOTE) {
+					quote = 1
+					if (!sep)
+						line = line " "
+					sep = 0
+					break
+				}
+				line = line $i
+			}
+		}
+	}
+
+	FS = FS_prev
+
+	if (quote)
+		print "mdroff: Warning! unterminated quote at line " NR > "/dev/stderr"
+
+	if (level == 1) {
+		if ((pgno = tocpg[HS]) == "")
+			pgno = "???"
+		print ".XS\n" \
+		      ".sp 0.3v\n" \
+		      ".XA " pgno "\n" \
+		      "\\s+4\\\n" \
+		      ".XM \\s+4" HS "\\s0\n" \
+		      "\\&" line "\n" \
+		      "\\s0\n" \
+		      ".XE\n" \
+		      ".XS\n" \
+		      ".sp 0.3v\n" \
+		      ".XE" >> tocfile
+	} else if (level == 2) {
+		if ((pgno = tocpg[HS]) == "")
+			pgno = "???"
+		print ".XS\n" \
+		      ".XA " pgno " 12n\n" \
+		      ".XM " HS "\n" \
+		      "\\&" line "\n" \
+		      ".XE" >> tocfile
+	}
+
+	next
+}
+
+{
+	print
+}
+'
+}
+
+cleanup()
+{
+	rm -f "$FIFO"
+	trap 0
+}
+
+rm -f "$tocfile"
+
+trap cleanup 0 INT QUIT
+mkfifo -m660 "$FIFO"
+mdpost <"$FIFO" >&2 &
+
+iconv -futf8 -tkoi8r $* | preconv -eKOI8R | mdpre | eqn | \
+    GROFF_TMAC_PATH="$MDTMACPATH" groff ${GROFFOPTS} 2>"$FIFO"
+

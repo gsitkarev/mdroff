@@ -1,0 +1,111 @@
+.\"
+.\"	keep.tmac -- normal and floating keeps
+.\"
+.\"
+.nr keep-type 0
+.nr keep-output 0
+.nr keep-count 0 1
+.
+.
+.\"	keep@output -- outputs floating keeps
+.de keep@output
+.nr keep-output 1
+.ev keep
+.br
+.in 0
+.ce 0
+.ls 1
+.rn keep-float keep-tmp
+.nf
+.keep-tmp
+.fi
+.rm keep-tmp
+.ev
+.nr keep-type 0
+.if '\\n(.z'keep-float' \{\
+.	nr keep-type 2
+.	di
+.\}
+.nr keep-output 0
+..
+.de keep@start
+.if \\n[keep-count]=0 \{\
+.	nr keep-type 0
+.	keep@real-start
+.\}
+.nr keep-count +1
+..
+.de keep@float
+.if \\n[keep-count]=0 \{\
+.	nr keep-type 1
+.	keep@real-float
+.\}
+.nr keep-count +1
+..
+.de keep@end
+.ie \\n[keep-count]<=0 \{\
+.	tm \\n(.F:\\n(.c: KE: opening KS/KF pair missing
+.	return
+.\}
+.el \{\
+.	nr keep-count -1
+.	if \\n[keep-count]=0 \
+.		keep@real-end
+.\}
+..
+.de keep@real-start
+.br
+.ev keep
+.br
+.evc 0
+.di keep-div
+.nr keep-type 0
+..
+.de keep@real-float
+.ev keep
+.evc 0
+.br
+.di keep-div
+.nr keep-type 1
+..
+.de keep@real-end
+.br
+.di
+.ce 0
+.in 0
+.ls 1
+.rs
+.if \\n[keep-type]=0 \
+.	if \\n(.t<\\n(dn \
+.		sp 500
+.if \\n[keep-type]=1 \{\
+.	ie \\n(.t>=\\n(dn \
+.		nr keep-type 0
+.	el \{\
+.		nf
+.		da keep-float
+\!.keep@rediv \\n(dn
+.		keep-div
+.		di
+.		rm keep-div
+.		nr keep-type 2 
+.	\}
+.\}
+.if \\n[keep-type]=0 \{\
+.	nf
+.	keep-div
+.	fi
+.	rm keep-div
+.\}
+.ev
+..
+.de keep@rediv
+.if \\$1>\\n(.t \{\
+.	ie !'\\n(.z'keep-float' \
+.		di keep-float
+\!.keep@rediv \\$1
+.\}
+..
+.als KS keep@start
+.als KF keep@float
+.als KE keep@end

@@ -1,0 +1,94 @@
+.\"
+.\"	doc.tmac -- document title macros
+.\"
+.\"
+.
+.ds DS date, signature
+.nr YR 1900+\n(yr
+.ds YR \\n(YR.
+.
+.\"	DT -- document title
+.\"
+.\"	DT title
+.\"	DT pretitle topic
+.\"
+.de doc@title
+.da cover
+.br
+.ev cover
+.rs
+.ps 12
+.vs 14
+.sp 15v
+.nf
+.ce 1000
+.vs 12p*2u
+.if \\n(.$=2 \{\
+\s+8\\$1
+.	sp 0.3v
+\&\\$2\s0
+.\}
+.if \\n(.$=1 \
+\s+8\\$1\s0
+.sp 5v
+.ev
+.di
+.als DA doc@author
+.als DF doc@footer
+.rm DT
+..
+.
+.
+.\"	DA -- document author
+.\"
+.\"	DA title name
+.\"
+.de doc@author
+.da cover
+.br
+.ev cover
+.ps 12
+.vs 14
+.ft I
+.ce 0
+.in 0
+.nf
+.ds @t \\n[.tabs]
+.ta 5cR 5.5cL 9cL
+\t\\$1\t\l'16n'\t\fR\\$2\fP
+.ta 7cC
+\t\s-2\\*(DS\s0
+.ft
+.sp 0.5v
+.ta \\*(@t
+.ev
+.di
+..
+.
+.\"
+.\"	DF -- document footer
+.\"
+.\"	DF organization [city] [year]
+.\"
+.de doc@footer
+.da cover-footer
+.br
+.ev cover
+.nf
+.ce 1000
+.ps 12
+.vs 14
+.sp 3v
+\l'16n'
+.sp 0.5v
+.vs +4
+\s+2\\$1\s0
+.if \\n(.$>=3 .ds @y \\$3
+.if \\n(.$<3 .ds @y \\*(YR
+.if !'\\$2'' \&\\$2, \\*(@y
+.if '\\$2'' \\*(@y
+.vs
+.ev
+.di
+..
+.als DT doc@title

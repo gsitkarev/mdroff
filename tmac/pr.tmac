@@ -1,0 +1,155 @@
+.\"
+.\"	pr.tmac -- paragraph macros
+.\"
+.\"
+.
+.am HN-post-hook
+.if \\n[HI]>0 \
+.	nr pr-heading-indent 1
+..
+.
+.de pr@push
+.nr @n \\n[pr@\\n[.ev]:il]
+.nr pr@\\n[.ev]:\\n[@n]:ri \\n[pr@\\n[.ev]:ri]
+.nr pr@\\n[.ev]:\\n[@n]:li \\n[pr@\\n[.ev]:li]
+.nr pr@\\n[.ev]:\\n[@n]:pri \\n[pr@\\n[.ev]:pri]
+.nr pr@\\n[.ev]:\\n[@n]:pli \\n[pr@\\n[.ev]:pli]
+.nr pr@\\n[.ev]:\\n[@n]:ip \\n[pr@\\n[.ev]:ip]
+.nr pr@\\n[.ev]:il +1
+..
+.de pr@pop
+.ie \\n[pr@\\n[.ev]:il]>0 \{\
+.	nr pr@\\n[.ev]:il -1
+.	nr @n \\n[pr@\\n[.ev]:il]
+.	nr pr@\\n[.ev]:ri \\n[pr@\\n[.ev]:\\n[@n]:ri]
+.	nr pr@\\n[.ev]:li \\n[pr@\\n[.ev]:\\n[@n]:li]
+.	nr pr@\\n[.ev]:pri \\n[pr@\\n[.ev]:\\n[@n]:pri]
+.	nr pr@\\n[.ev]:pli \\n[pr@\\n[.ev]:\\n[@n]:pli]
+.	nr pr@\\n[.ev]:ip \\n[pr@\\n[.ev]:\\n[@n]:ip]
+.\}
+.el \{\
+.	tm \\n(.F:\\n(.c: \\$0: stack is empty
+.\}
+..
+.de pr@reset
+.br
+.ll (u;\\n[LL]-\\n[pr@\\n[.ev]:pri]-\\n[pr@\\n[.ev]:ri])u
+.lt \\n(.lu
+.in (u;\\n[pr@\\n[.ev]:pli]+\\n[pr@\\n[.ev]:li])u
+.ce 0
+.ul 0
+.ls 1
+.fi
+.ad b
+.rj 0
+.font@reset
+.ie \\n[VS]>1000 \
+.	vs (\\n[VS]u/1000u)*1p
+.el \
+.	vs \\n[VS]p
+.TA
+.hy \\n[HY]
+..
+.de pr@new
+.nr pr@\\n[.ev]:pli \\$1
+.nr pr@\\n[.ev]:pri \\$2
+.pr@reset
+..
+.de pr@line
+.pr@new 0 0
+.ne 1.5v
+..
+.de pr@normal
+.pr@new 0 0
+.ie '\\n[.ev]'0' \{\
+.	ie \\n[pr-heading-indent] \
+.		ti +\\n[HI]u
+.	el \
+.		ti +\\n[PI]u
+.	nr pr-heading-indent 0
+.\}
+.el \
+.	ti +\\n[PI]u
+.ne 1.5v
+..
+.de pr@first
+.pr@new 0 0
+.ti +\\n[PI]u*3u
+..
+.de pr@quoted
+.pr@new \\n[PQ] \\n[PQ]
+.ti +\\n[PI]u
+.ne 1.5v
+..
+.de pr@example
+.pr@new 0 0
+.nf
+.ne 1.5v
+..
+.de pr@indented
+.if !\\n[pr@\\n[.ev]:ip] \
+.	nr pr@\\n[.ev]:ip \\n[PI]
+.if !'\\$2'' \
+.	nr pr@\\n[.ev]:ip (0\\$2)
+.pr@new \\n[pr@\\n[.ev]:ip] 0
+.ev pr-marker
+.pr@reset
+.di pr@div-marker
+\&\\$1
+.br
+.di
+.ev
+.chop pr@div-marker
+.ti -\\n[pr@\\n[.ev]:ip]u
+\&\\*[pr@div-marker]\h'|\\n[pr@\\n[.ev]:ip]u'\c
+.if \\n[dl]+1n>=\\n[pr@\\n[.ev]:ip]
+.	br
+.rm pr@div-marker
+.ne 1.5v
+..
+.de pr@moveright
+.pr@reset
+.pr@push
+.ie !'\\$1'' \
+.	nr \\$0-i (0\\$1n)
+.el \{\
+.	ie (\\n[pr@\\n[.ev]:ip] > 0) \
+.		nr \\$0-i \\n[pr@\\n[.ev]:ip]
+.	el \
+.		nr \\$0-i \\n[PI]
+.\}
+.nr pr@\\n[.ev]:ip \\n[\\$0-i]
+.nr pr@\\n[.ev]:li +\\n[\\$0-i]
+.pr@reset
+..
+.de pr@moveleft
+.ie '\\$1'' \
+.	nr \\$0-n 1
+.el \
+.	nr \\$0-n \\$1
+.if (\\n[\\$0-n] > \\n[pr@\\n[.ev]:il]) \
+.	nr \\$0-n \\n[pr@\\n[.ev]:il]
+.while (\\n[\\$0-n] > 0) \{\
+.	pr@pop
+.	nr \\$0-n -1
+.\}
+.pr@reset
+..
+.de pr@dbg
+.tm Paragraph environment: "\\n[.ev]"
+.tm Current indent level: \\n[pr@\\n[.ev]:il]
+.tm Right indent: \\n[pr@\\n[.ev]:ri]
+.tm Left indent: \\n[pr@\\n[.ev]:li]
+.tm Paragraph right indent: \\n[pr@\\n[.ev]:pri]
+.tm Paragraph left indent: \\n[pr@\\n[.ev]:pli]
+.tm Paragraph indent: \\n[pr@\\n[.ev]:ip]
+..
+.
+.als PP pr@normal
+.als PF pr@first
+.als PL pr@line
+.als PQ pr@quoted
+.als PI pr@indented
+.als PX pr@example
+.als RS pr@moveright
+.als RE pr@moveleft

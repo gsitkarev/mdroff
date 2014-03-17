@@ -1,0 +1,140 @@
+.\"
+.\"	pg.tmac -- page related macros
+.\"
+.
+.\"	pg@init -- load time page initialization
+.\"
+.de pg@init
+.pg@reset
+.wh 0 pg@first
+.nr pg@print-header (-1)
+.nr pg@print-footer (-1)
+.nr pg@print-header-c \\n[pg@print-header]
+.nr pg@print-footer-c \\n[pg@print-footer]
+..
+.\"	pg@reset -- reposition traps on the page
+.\"
+.de pg@reset
+.nr pg-footer 0-\\n[FM]
+.ch pg@hd
+.ch pg@fo
+.ch fn@fx
+.ch BT
+.wh 0 pg@hd
+.wh \\n[pg-footer]u pg@fo
+.wh 100i fn@fx
+.ch fn@fx -\\n[FM]u
+.wh -\\n[FM]u/2u BT
+..
+.\"	pg@first-footer -- print cover sheet footer
+.\"
+.de pg@first-footer
+.if d cover-footer \{\
+.	ev cover
+.	nf
+.	in 0
+.	ce 0
+.	cover-footer
+.	ev
+.	ch pg@first-footer
+.	rm cover-footer
+.	rm pg@first-footer
+.\}
+..
+.\"	pg@first -- print cover sheet
+.\"
+.de pg@first
+.ch pg@first
+.wh 0 pg@hd
+.ie d cover \{\
+.	ev cover
+.	nf
+.	in 0
+.	ce 0
+.	cover
+.	ev
+.	rm cover
+.	if d cover-footer \
+.		wh \\n[.p]u-\\n[FM]u-6v pg@first-footer
+.	pg@titles 1 1
+.	bp
+.\}
+.el \
+.	pg@hd
+.rm pg@first
+..
+.\"	pg@line -- draw line-width horizontal line
+.de pg@line
+\l'\n(.lu'
+.br
+..
+.\"
+.\"	TT header footer
+.\"
+.\"	Where `header' and `footer' are:
+.\"
+.\"	  0    no print
+.\"	  1    print
+.\"
+.\"	Changes apply at the next page.
+.\"
+.de pg@titles
+.if \\n[.$]>=2 \{\
+.	if \\$1=0 \
+.		nr pg@print-header-c 0
+.	if \\$1=1 \
+.		nr pg@print-header-c 1
+.	if \\$2=0 \
+.		nr pg@print-footer-c 0
+.	if \\$2=1 \
+.		nr pg@print-footer-c 1
+.\}
+..
+.\"	pg@header -- print page header
+.de pg@header
+.sp (\\n[HM]u/2u-1v)
+.tl '''%'
+.sp |(\\n[HM]u/2u)
+.pg@line
+..
+.\"	pg@footer -- print page footer
+.de pg@footer
+..
+.\"	pg@hd -- page header macro
+.de pg@hd
+.pg@reset
+.ev h
+.pr@reset
+.if !(\\n[pg@print-header-c]=\\n[pg@print-header]) \{\
+.	if \\n[pg@print-header-c]=0 \
+.		nr pg@print-header (-1)
+.	if \\n[pg@print-header-c]=1 \
+.		nr pg@print-header 2
+.	nr pg@print-header-c \\n[pg@print-header]
+.\}
+.if \\n[pg@print-header]>1 .pg@header
+.sp |\\n[HM]u
+.ev
+.if d keep-float \
+.	if !\\n[keep-output] \
+.		keep@output
+.ns
+.fn@newpage
+..
+.\"	pg@fo -- page footer
+.de pg@fo
+.if \\n[fn-count]>0 \
+.	fn@output
+.ev h
+.if \\n[pg@print-footer]>1 \
+.	pg@footer
+.if \\n[pg@print-footer-c]=0 \
+.	nr pg@print-footer (-1)
+.if \\n[pg@print-footer-c]=1 \
+.	nr pg@print-footer 2
+.nr pg@print-footer-c \\n[pg@print-footer]
+.ev
+.if d keep-float \c
+'bp
+..
+.als TT pg@titles

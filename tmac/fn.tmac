@@ -1,0 +1,130 @@
+.\"
+.\"	fn.tmac -- footnotes macros
+.\"
+.nr FF 0 \" footnotes format
+.nr fn-count 0 1 \" footnote counter on the page
+.nr fn-number 0 1 \" footnote sequential number
+.nr fn-overflow 0 1 \" footnote overflows to next page flag (1 -- overflows, 0 -- no overflow)
+.
+.\"	Define string `\**' to place footnote number in superscript.
+.ds * "\s-2\v'-0.3m'\\n+[fn-number]\v'0.3m'\s+2
+.
+.\"	fn@newpage -- handles overflowed footnotes
+.de fn@newpage
+.nr fn-count 0
+.if \\n[fn-overflow] \{\
+.	nr fn-overflow 0
+.	fn@start
+.	nf
+.	fn-fxdiv
+.	fn@end
+.\}
+..
+.\"	fn@line -- draw footnote separator line
+.de fn@line
+\l'9m'
+.br
+..
+.\"	fn@start -- start footnote text
+.de fn@start
+.ie !'\\n[.ev]'fnotes' \{\
+.	ev fnotes
+.	br
+.	pr@reset
+.	nr fn-count +1
+.	da fn-div
+.	if \\n[fn-count]=1 \
+.		fn@line
+.\}
+.el \
+.	tm \\n(.F:\\n(.c: nested footnotes not allowed
+..
+.\"
+.de fn@end
+.ie '\\n[.ev]'fnotes' \{\
+.	if !'\\n[.z]'fn-div' \{\
+.		tm \\n(.F:\\n(.c: footnote ends in another diversion
+.		return
+.	\}
+.	br
+.	di
+.	ev
+.	nr fn-height +\\n[dn]
+.	nr pg-footer -\\n[dn]
+.	ie (\\n[nl]+1v)<=(\\n[.p]+\\n[pg-footer]) \{\
+.		ch pg@fo \\n[pg-footer]u
+.		if \\n[DB] \
+.			tm \\n(.F:\\n(.c: \\$0: moving pg@fo to \\n[pg-footer]
+.	\}
+.	el \{\
+.		nr fn-overflow 1
+.		\" place footer immediately after current line
+.		nr pg-footer \\n[nl]+1v
+.		if \\n[fn-count]=1 \{\
+.			if (\\n[nl]+1v)<(\\n[HM]+3v) \
+.				nr pg-footer \\n[HM]+3v
+.			if (\\n[nl]+1v)>=(\\n[.p]-\\n[FM]) \
+.				nr pg-footer 0-\\n[FM]-2v
+.		\}
+.		if \\n[DB] \
+.			tm \\n(.F:\\n(.c: footnote overflows, moving pg@fo trap to \\n[pg-footer]
+.		ch pg@fo \\n[pg-footer]u
+.	\}
+.\}
+.el \
+.	tm \\n(.F:\\n(.c: footnotes not started
+..
+.\"	fn@output -- output footnotes text
+.de fn@output
+.if !\\n[fn-overflow] \{\
+.	nr \\$0-d \\n[fn-height]-\\n[.t]
+.	if \\n[\\$0-d]>0 \{\
+.		\" correct footnotes trap if footnotes do not fit exactly
+.		if \\n[DB] \
+.			tm \\n(.F:\\n(.c: correcting fn@fx to \\n[\\$0-d] units
+.		ch fn@fx (0-\\n[FM]u+\\n[\\$0-d]u)
+.	\}
+.\}
+.ev fnotes
+.in 0
+.nf
+.fn-div
+.ev
+.rm fn-div
+.\" close footnotes overflow diversion if we are trapped into it
+.if '\\n[.z]'fn-fxdiv' \{\
+.	di
+.	if \\n[dn]=0 \{\
+.		nr fn-overflow 0
+.		rm fn-fxdiv
+.	\}
+.\}
+..
+.de fn@fx
+.if \\n[fn-overflow]
+.	di fn-fxdiv
+..
+.\"	fn@fs -- start formatted footnote text
+.de fn@fs
+.ie \\n[.$]>0 \
+.	ds \\$0-mark "\\$1
+.el \{\
+.	if (\\n[FF]=0):(\\n[FF]=2) \
+.		ds \\$0-mark \v'-0.20m'\s-2\\n[fn-number]\s+2\v'0.20m'
+.	if (\\n[FF]=1):(\\n[FF]=3) \
+.		ds \\$0-mark "\\n[fn-number].
+.\}
+.fn@start
+.ie \\n[FF]<2 \{\
+.	pr@normal
+\\*[\\$0-mark]
+.\}
+.el \
+.	pr@indented "\\*[\\$0-mark]" \w'\s-2000\s+2'
+..
+.\"	fn@fe -- end formatted footnote text
+.de fn@fe
+.fn@end
+..
+.als FS fn@fs
+.als FE fn@fe
