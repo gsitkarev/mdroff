@@ -241,7 +241,7 @@ Computer Science Technical Report 65, Bell Laboratories, December 1977.
 .sp 0.5v
 .PL
 .ce 1
-\*BРис. 1.\*P Экран конфигурации
+\*IРис. 1.\*P Экран конфигурации
 .sp 1.5v
 .ns
 .KE
@@ -294,14 +294,14 @@ F(s) = mark int from {- inf} to {+ inf} f(t) e sup {-st} dt =
 .br
 .di
 .chop eq-div
-.tm dn=\n[dn] dl=\n[dl]
+.\"tm dn=\n[dn] dl=\n[dl]
 .nf
 .mk eq-vstart
 .ce 1000
 .\"in +(\n(.lu-\n(dlu)/2uL
 \*[eq-div]
 .mk eq-vend
-.tm eq-vstart=\n[eq-vstart] eq-vend=\n[eq-vend]
+.\"tm eq-vstart=\n[eq-vstart] eq-vend=\n[eq-vend]
 .sp |\n[eq-vstart]u
 .sp \n[dn]u/2u
 .in 0

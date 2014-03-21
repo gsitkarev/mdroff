@@ -1,12 +1,15 @@
 #!/bin/sh
 
-reffile="mdroff.ref"
-tocfile="mdroff.toc"
-pgnfile="mdroff.pgn"
 MDTMACPATH="tmac/"
-GROFFOPTS="-Tps -dpaper=a4 -md -mru"
+reffile="/tmp/.mdroff-ref$$"
+tocfile="/tmp/.mdroff-toc$$"
+pgnfile="/tmp/.mdroff-pgn$$"
 FIFO="/tmp/.mdroff-post$$"
+TMP="/tmp/.mdroff-out$$"
 
+#
+# mdpost -- filters label definitions and numbered headings
+#
 mdpost()
 {
     awk -v reffile="$reffile" -v pgnfile="$pgnfile" '
@@ -210,16 +213,89 @@ BEGIN {
 
 cleanup()
 {
-	rm -f "$FIFO"
-	trap 0
+	rm -f "$FIFO" "$TMP"
+	rm -f "$reffile" "$tocfile" "$pgnfile"
 }
 
-rm -f "$tocfile"
+usage()
+{
+	cat <<-EOF
+	Usage: mdroff [OPTIONS] FILE ...
 
-trap cleanup 0 INT QUIT
-mkfifo -m660 "$FIFO"
-mdpost <"$FIFO" >&2 &
+	  -h		print help message
+	  -d name=s	define string \`name' as \`s'
+	  -e		preprocess with eqn
+	  -g		preprocess with grn
+	  -G		preprocess with grap
+	  -p		preprocess with pic
+	  -r name=n	define register \`n' as \`n'
+	  -R		preprocess with refer
+	  -s		preprocess with soelim
+	  -t		preprocess with tbl
+	  -Tdev		set output device (\`ps' for PostScript or \`pdf' for PDF)
+	
+	Example:
+	  $ mdroff -Tpdf -e -t example.tr >example.pdf
 
-iconv -futf8 -tkoi8r $* | preconv -eKOI8R | mdpre | eqn | \
-    GROFF_TMAC_PATH="$MDTMACPATH" groff ${GROFFOPTS} 2>"$FIFO"
+	EOF
+}
 
+gropost="grops"
+cmdpipe="mdpre | GROFF_TMAC_PATH=\"$MDTMACPATH\" groff \${GROFFOPTS}"
+GROFFOPTS="-Z -Tps -dpaper=$(cat /etc/papersize) -md"
+
+while getopts :d:eghpr:stGRT: f
+do
+	case "$f" in
+	d) GROFFOPTS="$GROFFOPTS -d $OPTARG";;
+	e) GROFFOPTS="$GROFFOPTS -e";;
+	g) GROFFOPTS="$GROFFOPTS -g";;
+	h) usage; exit 0;;
+	p) GROFFOPTS="$GROFFOPTS -p";;
+	r) GROFFOPTS="$GROFFOPTS -r $OPTARG";;
+	s) GROFFOPTS="$GROFFOPTS -s";;
+	t) GROFFOPTS="$GROFFOPTS -t";;
+	G) GROFFOPTS="$GROFFOPTS -G";;
+	R) GROFFOPTS="$GROFFOPTS -R";;
+	T) case $OPTARG in
+		ps)  ;;
+		pdf) gropost="grops | ps2pdf -dUseCIEColor=true -dPDFSETTINGS=/printer -";;
+		*)   usage; exit 1;;
+	   esac;;
+	*) usage; exit 1;;
+	esac
+done
+
+shift $((OPTIND-1))
+
+test $# -lt 1 && { usage; exit 1; }
+
+trap 'cleanup; exit 2;' INT QUIT
+trap 'cleanup' 0
+
+mkfifo -m660 "$FIFO" || { echo "failed to create FIFO" >&2; exit 1; }
+
+if [ "$LC_ALL" = "ru_RU.UTF-8" -o "$LANG" = "ru_RU.UTF-8" ]; then
+	GROFFOPTS="${GROFFOPTS} -mru"
+	cmdpipe="iconv -futf8 -tkoi8r -- \"$@\" | preconv -eKOI8R | $cmdpipe"
+else
+	cmdpipe="cat \"$@\" | $cmdpipe"
+fi
+
+npass="0"
+csum=""; csum2="-"
+
+while [ "$csum" != "$csum2" ]; do
+	csum2="$csum"
+	rm -f "$tocfile"
+	mdpost <"$FIFO" >&2 &
+	eval "${cmdpipe} 2>${FIFO} 1>${TMP}"
+	csum=$(md5sum "$TMP" | cut -d' ' -f1)
+	npass=$((npass+1))
+done
+
+eval "$gropost" <"$TMP"
+
+#printf "Done in %d pass%s\n" $npass $(test $npass -gt 1 && echo "es") >&2
+
+exit 0
