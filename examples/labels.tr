@@ -1,0 +1,53 @@
+.ds TOC "Оглавление
+.
+.TC
+.
+.H1 "Введение"
+.LA h!intro \*[HS-NO-DOT]
+.
+.H2 "Ссылки на формулы"
+.PP
+Параграф начался, и мы делаем ссылку на метку,
+определённую в другом параграфе.
+.LG eq!linalg1
+В выражении
+\*(LT (см. гл. \n(LC, стр. \n(LP)
+приведена формула, называемая \*Iпреобразованием Лапласа\*P.
+.
+.
+.H1 "Набор математических формул"
+.
+.H2 "Однострочный набор"
+.
+.PP
+Начался новый параграф.
+Здесь идёт формула, на номер которой мы ссылались раньше, выше по тексту.
+.
+.LA eq!linalg1 \*(EX
+.EQ
+delim $$
+.EN
+.EQ
+F(s) = mark int from {- inf} to {+ inf} f(t) ^ e sup {-st} dt =
+.EN
+.sp 0.5v
+.EQ
+ = lineup int from {- inf} to {+ inf} f(t) ^ e sup { - ^( "\," j sigma + omega ) t } dt =
+.EN
+.sp 0.5v
+.EQ \*(EC
+ = lineup F( sigma , omega )
+.EN
+.PL
+.LG h!intro
+Из этого места в тексте (см. гл. \*(LT) даются ссылки так,
+чтобы читатель смог их найти.
+Так формула
+.EQ \*(EX
+mark sqrt { a sub 1 x + b sub 1 x sup 2 + c sub 1 x sup 3 + "\|.\|.\|." + n x sup n }
+.EN
+.PL
+может быть записана так:
+.EQ \*(EX
+lineup ( a sub 1 x + b sub 1 x sup 2 + c sub 1 x sup 3 + "\|.\|.\|." + n x sup n ) ~ sup up 50 { size -1 { {^1^} over {^2^} } } .
+.EN

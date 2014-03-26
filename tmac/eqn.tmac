@@ -1,0 +1,56 @@
+.\"
+.\"	eqn.tmac - equations support macros
+.\"
+.\"
+.
+.nr eq-number 0 1
+.
+.\" current equation number
+.ds EC (\\n(H1.\\n[eq-number])
+.\" next equation number
+.ds EX (\\n(H1.\\n+[eq-number])
+.
+.am HN-post-hook
+.if \\n(HL=1 \
+.	nr eq-number 0
+..
+.de eq@start
+.if '\\n(.z'eq-div' \{\
+.	tm "\\(.F:\\(.c: EQ: extraneous EQ request"
+.	return
+.\}
+.br
+.ie \\n(.$>0 \
+.	ds eq-label "\\$1
+.el \
+.	ds eq-label
+.di eq-div
+..
+.de eq@end
+.if !'\\n(.z'eq-div' \{\
+.	tm "\\(.F:\\(.c: EN: opening EQ request required"
+.	return
+.\}
+.br
+.di
+.if \\n[dn]>0 \{\
+.	chop eq-div
+.	ev eq
+.	pr@reset 0 0
+.	nf
+.	ce 1000
+\\*[eq-div]
+.	mk eq-vend
+.	if !'\\*[eq-label]'' \{\
+.		sp -(\n[dn]u/2u+0.5v)
+.		in 0
+.		ta \n(.luR
+\t\\*[eq-label]
+.	\}
+.	ev
+.	sp |\\n[eq-vend]u
+.\}
+.rm eq-div
+..
+.als EQ eq@start
+.als EN eq@end
