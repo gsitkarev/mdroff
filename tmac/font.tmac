@@ -20,35 +20,43 @@
 .\"	\*R			Roman (normal) font
 .\"	\*P			switch to previous font	
 .\"
-.de CW
+.de @CW
 \)\c
 .font@push "font-typewriter"
 .font@resetsize
 \\*[font-typewriter]\c
 ..
-.de I
+.de @I
 \)\c
 .font@push "font-italic"
 .font@resetsize
 \\*[font-italic]\c
 ..
-.de B
+.de @B
 \)\c
 .font@push "font-bold"
 .font@resetsize
 \\*[font-bold]\c
 ..
-.de BI
+.de @BI
 \)\c
 .font@push "font-bold-italic"
 .font@resetsize
 \\*[font-bold-italic]\c
 ..
-.de P
+.de @P
 \)\c
 .font@pop
 .font@restore
 ..
+.
+.ds P \\*(@P\)
+.ds CW \\*[@CW]\)
+.ds BI \\*[@BI]\)
+.ds I \\*(@I\)
+.ds B \\*(@B\)
+.ds R \\*(@R\)
+.
 .\" resets font size to one specified in PS register
 .de font@resetsize
 .ie \\n(PS>1000 \

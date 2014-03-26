@@ -76,33 +76,41 @@ BEGIN {
 	FS = _FS
 }
 
-/^.TC[ \t]*/ {
+/^\.TC[ \t]*/ {
 	if (tocfile_sourced) {
 		print ".TC"
 	} else {
 		system("touch " tocfile)
 		print ".so " tocfile
-		#system("rm -f " tocfile)
 		tocfile_sourced = 1
 		print ".TC"
+		printf ".lf %d\n", NR
 	}
 	next
 }
 
-/^.LA / {
-	if ($2 == "g") {
-		name = $3
-		print ".ds label-name " name
-		if ((name, "text") in mdref) {
-			print ".ds label-text \"" mdref[name, "text"]
-			print ".nr label-page " mdref[name, "page"]
-			print ".nr label-chapter " mdref[name, "chapter"]
-		} else {
-			print ".tm \\n(.F:\\n(.c: Warning! Label `" name "'\'' is not defined!"
-		}
-	} else if ($2 == "s") {
-		printf ".tm LA:\t%s\t%s\t\\n%\t\\n[H1]\n", $3, $4
+/^\.LA / {
+	# issue troff directive to print label definition, page, and chapter
+	print $0
+	printf ".tm LA:\t%s\t%s\t\\n%\t\\n[H1]\n", $2, $3
+	printf ".lf %d\n", NR
+	next
+}
+
+/^\.LG / {
+	# get label and define label text, page, and chapter.
+	name = $2
+	print $0
+	print ".ds LN " name
+	if ((name, "text") in mdref) {
+		print ".ds LT \"" mdref[name, "text"]
+		print ".nr LP " mdref[name, "page"]
+		print ".nr LC " mdref[name, "chapter"]
+	} else {
+		#print ".tm \\n(.F:" NR ": Warning! Label `" name "'\'' is not defined!"
 	}
+	printf ".lf %d\n", NR
+	next
 }
 
 /^\.H[1-4] / {
@@ -201,6 +209,8 @@ BEGIN {
 		      "\\&" line "\n" \
 		      ".XE" >> tocfile
 	}
+
+	printf ".lf %d\n", NR
 
 	next
 }
