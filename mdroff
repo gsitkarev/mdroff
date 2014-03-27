@@ -90,14 +90,18 @@ BEGIN {
 }
 
 /^\.LA / {
-	# issue troff directive to print label definition, page, and chapter
-	print $0
-	printf ".tm LA:\t%s\t%s\t\\n%\t\\n[H1]\n", $2, $3
+	#   issue troff directive to print label definition,
+	# page, and chapter
+	#   prevent duplicated interpolation of 3-d argument
+	# via temporary variable
+	printf ".ds L@ \"%s\n", $3
+	printf ".LA \\*(L@\n"
+	printf ".tm LA:\t%s\t\\*(L@\t\\n%\t\\n[H1]\n", $2
 	printf ".lf %d\n", NR
 	next
 }
 
-/^\.LG / {
+/^\.LQ / {
 	# get label and define label text, page, and chapter.
 	name = $2
 	print $0

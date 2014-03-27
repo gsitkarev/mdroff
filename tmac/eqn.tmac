@@ -1,6 +1,13 @@
 .\"
-.\"	eqn.tmac - equations support macros
+.\"	eqn.tmac -- equations support macros
 .\"
+.\"
+.\"	Read-only registers:
+.\"	
+.\"	Read-only strings:
+.\"
+.\"	EC		current equation number
+.\"	EX		interpolates to next equation number
 .\"
 .
 .nr eq-number 0 1
@@ -36,6 +43,7 @@
 .if \\n[dn]>0 \{\
 .	chop eq-div
 .	ev eq
+.	br
 .	pr@reset 0 0
 .	nf
 .	ce 1000
