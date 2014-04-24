@@ -1,10 +1,11 @@
 .\"	
-.\"	font.tmac  -- font macros
+.\"	font.tmac -- font macros
 .\"
 .
 .\" Escape sequences to switch font
 .ds font-roman \fR
 .ds font-typewriter \f(CW\\s-1
+.ds font-typewriter-bold \f(CB\\s-1
 .ds font-italic \fI
 .ds font-bold \fB
 .ds font-bold-italic \f(BI
@@ -14,6 +15,7 @@
 .\"
 .\" Usage:
 .\" 	\*(CW or \*[CW]		constant width typewriter-like font
+.\"	\*(CB or \*[CB]		constant width bold typewriter-like font
 .\"	\*I			Italic font
 .\"	\*B			Bold font
 .\"	\*(BI or \*[BI]		Bold Italic font
@@ -25,6 +27,12 @@
 .font@push "font-typewriter"
 .font@resetsize
 \\*[font-typewriter]\c
+..
+.de @CB
+\)\c
+.font@push "font-typewriter-bold"
+.font@resetsize
+\\*[font-typewriter-bold]\c
 ..
 .de @I
 \)\c
@@ -52,6 +60,7 @@
 .
 .ds P \\*(@P\)
 .ds CW \\*[@CW]\)
+.ds CB \\*[@CB]\)
 .ds BI \\*[@BI]\)
 .ds I \\*(@I\)
 .ds B \\*(@B\)

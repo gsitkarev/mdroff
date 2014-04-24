@@ -72,21 +72,20 @@
 .	ti +\\n[PI]u
 .ne 1.5v
 ..
-.de pr@first
-.pr@new 0 0
-.ti +\\n[PI]u*3u
-..
 .de pr@quoted
+.nr pr-heading-indent 0
 .pr@new \\n[PQ] \\n[PQ]
 .ti +\\n[PI]u
 .ne 1.5v
 ..
 .de pr@example
-.pr@new 0 0
+.nr pr-heading-indent 0
+.pr@new \\n[PI] 0
 .nf
 .ne 1.5v
 ..
 .de pr@indented
+.nr pr-heading-indent 0
 .if !\\n[pr@\\n[.ev]:ip] \
 .	nr pr@\\n[.ev]:ip \\n[PI]
 .if !'\\$2'' \
@@ -146,7 +145,6 @@
 ..
 .
 .als PP pr@normal
-.als PF pr@first
 .als PL pr@line
 .als PQ pr@quoted
 .als PI pr@indented

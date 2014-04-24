@@ -29,11 +29,14 @@
 .\"
 .de H1
 .br
-.if \\n[nl]>\\n[HM] .bp
-.rs
+.if \\n[nl]>\\n[HM] \{
+.	rs
+.	bp
+.\}
 .ev H
 .br
 .pr@reset
+.rs
 .sp 12v
 .nr H2 0
 .nr H3 0

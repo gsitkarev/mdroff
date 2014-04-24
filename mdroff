@@ -5,7 +5,8 @@ reffile="/tmp/.mdroff-ref$$"
 tocfile="/tmp/.mdroff-toc$$"
 pgnfile="/tmp/.mdroff-pgn$$"
 FIFO="/tmp/.mdroff-post$$"
-TMP="/tmp/.mdroff-out$$"
+GROTMP="/tmp/.mdroff-out$$"
+MDPRETMP="/tmp/.mdroff-pre$$"
 
 #
 # mdpost -- filters label definitions and numbered headings
@@ -214,6 +215,8 @@ BEGIN {
 		      ".XE" >> tocfile
 	}
 
+	fflush(tocfile)
+
 	printf ".lf %d\n", NR
 
 	next
@@ -227,7 +230,7 @@ BEGIN {
 
 cleanup()
 {
-	rm -f "$FIFO" "$TMP"
+	rm -f "$FIFO" "$GROTMP" "$MDPRETMP"
 	rm -f "$reffile" "$tocfile" "$pgnfile"
 }
 
@@ -255,7 +258,8 @@ usage()
 }
 
 gropost="grops"
-cmdpipe="mdpre | GROFF_TMAC_PATH=\"$MDTMACPATH\" groff \${GROFFOPTS}"
+precmdpipe="mdpre"
+grocmdpipe="GROFF_TMAC_PATH=\"$MDTMACPATH\" groff \${GROFFOPTS}"
 GROFFOPTS="-Z -Tps -dpaper=$(cat /etc/papersize) -md"
 
 while getopts :d:eghpr:stGRT: f
@@ -291,24 +295,35 @@ mkfifo -m660 "$FIFO" || { echo "failed to create FIFO" >&2; exit 1; }
 
 if [ "$LC_ALL" = "ru_RU.UTF-8" -o "$LANG" = "ru_RU.UTF-8" ]; then
 	GROFFOPTS="${GROFFOPTS} -mru"
-	cmdpipe="iconv -futf8 -tkoi8r -- \"$@\" | preconv -eKOI8R | $cmdpipe"
+	precmdpipe="iconv -futf8 -tkoi8r -- \"$@\" | preconv -eKOI8R | $precmdpipe"
 else
-	cmdpipe="cat \"$@\" | $cmdpipe"
+	precmdpipe="cat \"$@\" | $precmdpipe"
 fi
 
 npass="0"
 csum=""; csum2="-"
 
+set -e
+
+# Continuously run groff pipeline untill intermediate output converges (i.e. stops changing).
 while [ "$csum" != "$csum2" ]; do
 	csum2="$csum"
+	# Remove previous TOC file, mdpre will generate it again.
 	rm -f "$tocfile"
+	eval "${precmdpipe}" 1>${MDPRETMP}
+	# mdpost runs as a coprocess connected to standard error stream via FIFO.
 	mdpost <"$FIFO" >&2 &
-	eval "${cmdpipe} 2>${FIFO} 1>${TMP}"
-	csum=$(md5sum "$TMP" | cut -d' ' -f1)
+	eval "${grocmdpipe}" <${MDPRETMP} 2>${FIFO} 1>${GROTMP}
+	# For safety, wait for mdpost to finish before calculation of
+	# MD5 fingerprint of groff intermediate output.
+	wait
+	csum=$(md5sum "$GROTMP" | cut -d' ' -f1)
 	npass=$((npass+1))
 done
 
-eval "$gropost" <"$TMP"
+# Converged output is processed via groff device-specific
+# driver (currently PostScript only).
+eval "$gropost" <"$GROTMP"
 
 #printf "Done in %d pass%s\n" $npass $(test $npass -gt 1 && echo "es") >&2
 
