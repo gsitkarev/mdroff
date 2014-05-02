@@ -1,5 +1,6 @@
 #!/bin/sh
 
+#MDTMACPATH=/home/sitkarev/Projects/git/mdroff/tmac
 MDTMACPATH="tmac/"
 reffile="/tmp/.mdroff-ref$$"
 tocfile="/tmp/.mdroff-toc$$"
@@ -39,7 +40,7 @@ mdpost()
 
 mdpre()
 {
-    awk -v reffile="$reffile" -v tocfile="$tocfile" -v pgnfile="$pgnfile" '
+    awk -v nofigures="$nofigures" -v reffile="$reffile" -v tocfile="$tocfile" -v pgnfile="$pgnfile" '
 BEGIN {
 	QUOTE = "\""
 	SLASH = "\\"
@@ -87,6 +88,23 @@ BEGIN {
 		print ".TC"
 		printf ".lf %d\n", NR
 	}
+	next
+}
+
+nofigures && /^\.FG / && $2 != "-box" {
+	# Replace real EPS figures inserted by FG by rectangular boxes.
+	file = $2
+	if (file ~ /\.eps$/)
+  		cmd = "head -n 10 " file \
+		    " | awk '\''/^%%BoundingBox:/ { print $4 \" \" $5 }'\''"
+	else
+		cmd = "identify " file \
+		    " | awk '\'' { l = $3; split(l, s, \"x\"); print s[1] \" \" s[2] }'\''"
+	cmd | getline line
+	split(line, s)
+	s[1] = s[1] "p"; s[2] = s[2] "p"
+	$1 = $1 " -box " s[1] " " s[2]
+	print $0
 	next
 }
 
@@ -244,6 +262,7 @@ usage()
 	  -e		preprocess with eqn
 	  -g		preprocess with grn
 	  -G		preprocess with grap
+	  -n		replace pictures with rectangular boxes
 	  -p		preprocess with pic
 	  -r name=n	define register \`n' as \`n'
 	  -R		preprocess with refer
@@ -262,13 +281,14 @@ precmdpipe="mdpre"
 grocmdpipe="GROFF_TMAC_PATH=\"$MDTMACPATH\" groff \${GROFFOPTS}"
 GROFFOPTS="-Z -Tps -dpaper=$(cat /etc/papersize) -md"
 
-while getopts :d:eghpr:stGRT: f
+while getopts :d:eghnpr:stGRT: f
 do
 	case "$f" in
 	d) GROFFOPTS="$GROFFOPTS -d $OPTARG";;
 	e) GROFFOPTS="$GROFFOPTS -e";;
 	g) GROFFOPTS="$GROFFOPTS -g";;
 	h) usage; exit 0;;
+	n) nofigures=1;;
 	p) GROFFOPTS="$GROFFOPTS -p";;
 	r) GROFFOPTS="$GROFFOPTS -r $OPTARG";;
 	s) GROFFOPTS="$GROFFOPTS -s";;

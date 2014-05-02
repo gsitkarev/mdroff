@@ -1,0 +1,68 @@
+.\"
+.\"	fg.tmac -- numbered figure macro
+.\"
+.\"
+.\"
+.\"
+.nr FGNR 0 1
+.ds FGNR \\n[FGNR]
+.ds FGNX \\n+[FGNR]
+.
+.\" start of sentence figure caption prefix
+.if !d FGCAPBG .ds FGCAPBG Fig.
+.\" normal figure caption prefix
+.if !d FGCAPSM .ds FGCAPSM fig.
+.\" caption figure number separator (usually dot or colon)
+.if !d FGNRSEP .ds FGNRSEP :
+.
+.\"	F# -- print figure label data to stderr
+.\"
+.\"	This macro is used within figures in floating keeps.
+.\"	Page number of the label is available only at the
+.\"	the top-level diversion. This macro reinserts itself
+.\"	when invoked inside any diversion.
+.\"
+.de F#
+.ie '\\n(.z'' \
+.	tm LA:	\\$1	\\$2	\\n%	\\$3
+.el \
+\!.F# \\$1 \\$2 \\$3
+..
+.\"	FG -- automatically numbered figure
+.\"
+.\"	When used with the `-box' option, picture file is ignored and
+.\"	replaced with a rectangular box. User may provide scaling
+.\"	for WIDTH and HEIGHT parameters. The default scaling is `m' for
+.\"	WIDTH and `v' for HEIGHT.
+.\"
+.\"	Usage:
+.\"		FG [-box WIDTH HEIGHT] file [label [caption]]
+.\"
+.\"	Example:
+.\"		FG pic/flower.eps fig:niceflower "Nice flower painting"
+.\"		FG -box 800 200 pic/login.eps fig:loginwin "Login window screen"
+.\"
+.de FG
+.KF
+.sp 1.5v
+.ie '\\$1'-box' \{\
+\h'\\n(.lu-0\\$2/2u'\D'p 0\\$2 0 0 0\\$3 -0\\$2 0 0 -0\\$3'
+.	sp 0\\$3p
+.	shift 3
+.\}
+.el \
+.	PSPIC -C \\$1
+.sp 0.5v
+.PL
+.ds fg-number \\*[FGNX]
+.ce 1
+.if !'\\$2'' \
+\!.F# \\$2 \\*[fg-number] \\n(H1
+.ie !'\\$3'' \
+\&\\*[FGCAPBG] \\*[fg-number]\\*[FGNRSEP]\h'1n'\\$3
+.el \
+\&\\*[FGCAPBG] \\*[fg-number]\\*[FGNRSEP]
+.sp 1.5v
+.ns
+.KE
+..
