@@ -75,9 +75,10 @@
 .in 0
 .ls 1
 .rs
-.if \\n[keep-type]=0 \
+.if \\n[keep-type]=0 \{\
 .	if \\n(.t<\\n(dn \
 .		sp 500
+.\}
 .if \\n[keep-type]=1 \{\
 .	ie \\n(.t>=\\n(dn \
 .		nr keep-type 0
