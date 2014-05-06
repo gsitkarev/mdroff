@@ -70,19 +70,19 @@
 .\}
 .el \
 .	ti +\\n[PI]u
-.ne 1.5v
+.ne (\\n[PNHANG]-0.5)v
 ..
 .de pr@quoted
 .nr pr-heading-indent 0
 .pr@new \\n[PQ] \\n[PQ]
 .ti +\\n[PI]u
-.ne 1.5v
+.ne (\\n[PNHANG]-0.5)v
 ..
 .de pr@example
 .nr pr-heading-indent 0
 .pr@new \\n[PI] 0
 .nf
-.ne 1.5v
+.ne (\\n[PNHANG]-0.5)v
 ..
 .de pr@indented
 .nr pr-heading-indent 0
@@ -104,7 +104,7 @@
 .if \\n[dl]+1n>=\\n[pr@\\n[.ev]:ip]
 .	br
 .rm pr@div-marker
-.ne 1.5v
+.ne (\\n[PNHANG]-0.5)v
 ..
 .de pr@moveright
 .pr@reset
