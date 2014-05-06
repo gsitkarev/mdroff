@@ -29,7 +29,11 @@
 .\"
 .de H1
 .br
-.if \\n[nl]>\\n[HM] \{
+.\" 	Floating keeps are sometimes outputed by the page
+.\"	header macro following `bp' request. Skip as many
+.\"	pages as necessary before we can put H1 heading at
+.\"	the right place without any preceding text or pictures.
+.while (\\n[nl]>\\n[HM]) \{\
 .	rs
 .	bp
 .\}
@@ -118,6 +122,13 @@
 .if \\n[HI]>0 \
 .	ta \\n[HI]uL
 .nf
+.
+.\"	Calculate the space we need to prevent hanging
+.\"	headings on the page.
+.nr HN-nlines \\n[.$]-1
+.nr HN-need (\\n[HN-nlines]*(\\n[.s]p+2p))+(\\n[PNHANG]*\\n[VS]p)
+.ne \\n[HN-need]u
+.
 .vs \\n[.s]+2p
 .ie \\n[HI]>0 \\*[HS]\t\\$2
 .el \\*[HS] \\$2
