@@ -16,11 +16,14 @@
 .\"	Configuration strings:
 .\"
 .\"	HN-PRINT-DOT	heading number mode
+.\"	HNAPDX		appendix string
 .\"
 .\"		if defined	print dot at the end
 .\"		if not defined	do not print dot
 .\"
-.ds  HN-PRINT-DOT
+.ds HN-PRINT-DOT
+.
+.ds HNAPDX Appendix
 .
 .\"
 .\"	Every heading macro must begin with the break request
@@ -96,6 +99,72 @@
 .ev
 .ns
 ..
+.\"	AP -- start of appendix section
+.de AP
+.br
+.while (\\n[nl]>\\n[HM]) \{\
+.	rs
+.	bp
+.\}
+.rs
+.nr H1 0
+.nr H2 0
+.nr H3 0
+.nr H4 0
+.ev H
+.br
+.pr@reset
+.sp 1.8v
+.ps +6
+.ft B
+.ce 100
+\\*[HNAPDX]
+.ce 0
+.sp 0.3v
+.ev
+.ns
+..
+.de A1
+.br
+.rs
+.ev H
+.br
+.pr@reset
+.sp 1.8v
+.nr H2 0
+.nr H3 0
+.nr H4 0
+.ps +6
+.ft B
+.in +\\n(HIu
+.nr AH \\n(HI
+.nr HI 0
+.HN 1 \\$@
+.nr HI \\n(AH
+.sp 0.5v
+.ev
+.ns
+..
+.de A2
+.br
+.rs
+.ev H
+.br
+.pr@reset
+.sp 0.5v
+.nr H3 0
+.nr H4 0
+.ps +2
+.ft B
+.in +\\n(HIu
+.nr AH \\n(HI
+.nr HI 0
+.HN 2 \\$@
+.nr HI \\n(AH
+.sp 0.2v
+.ev
+.ns
+..
 .\" Empty heading hooks, use `am' directive to append to it.
 .de HN-pre-hook
 ..
@@ -119,9 +188,10 @@
 .ds HS-NO-DOT \\*[HS]
 .if d HN-PRINT-DOT \
 .	as HS .
-.if \\n[HI]>0 \
+.ie \\n[HI]>0 \
 .	ta \\n[HI]uL
-.nf
+.el \
+.	ta \w'\\*(HS 'uL
 .
 .\"	Calculate the space we need to prevent hanging
 .\"	headings on the page.
@@ -129,13 +199,12 @@
 .nr HN-need (\\n[HN-nlines]*(\\n[.s]p+2p))+(\\n[PNHANG]*\\n[VS]p)
 .ne \\n[HN-need]u
 .
+.nf
 .vs \\n[.s]+2p
-.ie \\n[HI]>0 \\*[HS]\t\\$2
-.el \\*[HS] \\$2
+\\*[HS]\t\\$2
 .nr \\$0-i 3
 .while (\\n[\\$0-i]<=\\n[.$]) \{\
-.ie \\n[HI]>0 \t\\$\\n[\\$0-i]
-.el \\$\\n[\\$0-i]
+\t\\$\\n[\\$0-i]
 .	as HA " \\$\\n[\\$0-i]
 .	nr \\$0-i +1
 .\}

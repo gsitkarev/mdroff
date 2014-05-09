@@ -4,8 +4,7 @@
 .\"
 .
 .am HN-post-hook
-.if \\n[HI]>0 \
-.	nr pr-heading-indent 1
+.nr pr-heading-indent 1
 ..
 .
 .de pr@push
@@ -62,7 +61,7 @@
 .de pr@normal
 .pr@new 0 0
 .ie '\\n[.ev]'0' \{\
-.	ie \\n[pr-heading-indent] \
+.	ie \\n[pr-heading-indent]&\\n[HI]>0 \
 .		ti +\\n[HI]u
 .	el \
 .		ti +\\n[PI]u

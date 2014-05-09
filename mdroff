@@ -136,11 +136,30 @@ nofigures && /^\.FG / && $2 != "-box" {
 	next
 }
 
-/^\.H[1-4] / {
+/^\.AP[ \t]*/ {
+	H1 = 0; H2 = 0; H3 = 0;
+	print ".ev toc\n" \
+	      ".br\n" \
+	      ".da toc-div\n" \
+	      ".pr@reset\n" \
+	      ".br\n" \
+	      ".sp 0.3v\n" \
+	      "\\s+4\\*[HNAPDX]\\s0\n" \
+	      ".sp 0.3v\n" \
+	      ".di\n" \
+	      ".ev" >> tocfile
+}
+
+/^\.H[1-4] / || /^\.A[1-2] / {
 
 	print $0
 
 	level = substr($1, 3)+0
+	
+	if (substr($0, 2, 1) == "A")
+		appendix = 1
+	else
+		appendix = 0
 
 	if (level == 1) {
 		H1++
@@ -152,8 +171,12 @@ nofigures && /^\.FG / && $2 != "-box" {
 	}
 	HS = HS "."
 
-	if (level <= 2)
-		printf ".tm NH:\t\\*[HS]\t\\n[%]\n"
+	if (level <= 2) {
+		if (!appendix)
+			printf ".tm NH:\t\\*[HS]\t\\n[%]\n"
+		else
+			printf ".tm NH:\\tA\\*[HS]\t\\n[%]\n"
+	}
 
 	$1 = ""
 	FS_prev = FS
@@ -209,28 +232,40 @@ nofigures && /^\.FG / && $2 != "-box" {
 	if (quote)
 		print "mdroff: Warning! unterminated quote at line " NR > "/dev/stderr"
 
-	if (level == 1) {
-		if ((pgno = tocpg[HS]) == "")
-			pgno = "???"
-		print ".XS\n" \
-		      ".sp 0.3v\n" \
-		      ".XA " pgno "\n" \
-		      "\\s+4\\\n" \
-		      ".XM \\s+4" HS "\\s0\n" \
-		      "\\&" line "\n" \
-		      "\\s0\n" \
-		      ".XE\n" \
-		      ".XS\n" \
-		      ".sp 0.3v\n" \
-		      ".XE" >> tocfile
-	} else if (level == 2) {
-		if ((pgno = tocpg[HS]) == "")
-			pgno = "???"
-		print ".XS\n" \
-		      ".XA " pgno " 12n\n" \
-		      ".XM " HS "\n" \
-		      "\\&" line "\n" \
-		      ".XE" >> tocfile
+	if (!appendix) {
+		if (level == 1) {
+			if ((pgno = tocpg[HS]) == "")
+				pgno = "???"
+			print ".XS\n" \
+			      ".sp 0.3v\n" \
+			      ".XA " pgno "\n" \
+			      "\\s+4\\\n" \
+			      ".XM \\s+4" HS "\\s0\n" \
+			      "\\&" line "\n" \
+			      "\\s0\n" \
+			      ".XE\n" \
+			      ".XS\n" \
+			      ".sp 0.3v\n" \
+			      ".XE" >> tocfile
+		} else if (level == 2) {
+			if ((pgno = tocpg[HS]) == "")
+				pgno = "???"
+			print ".XS\n" \
+			      ".XA " pgno " 12n\n" \
+			      ".XM " HS "\n" \
+			      "\\&" line "\n" \
+			      ".XE" >> tocfile
+		}
+	} else {
+		if (level == 1) {
+			if ((pgno = tocpg["A" HS]) == "")
+				pgno = "???"
+			print ".XS\n" \
+			      ".XA " pgno " 12n\n" \
+			      ".XM " HS "\n" \
+			      "\\&" line "\n" \
+			      ".XE" >> tocfile
+		}
 	}
 
 	fflush(tocfile)
