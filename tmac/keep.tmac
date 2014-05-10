@@ -5,6 +5,7 @@
 .nr keep-type 0
 .nr keep-output 0
 .nr keep-count 0 1
+.nr keep-nospace 0
 .
 .
 .\"	keep@output -- outputs floating keeps
@@ -74,6 +75,7 @@
 .ce 0
 .in 0
 .ls 1
+.nr keep-nospace \\n[.ns]
 .rs
 .if \\n[keep-type]=0 \{\
 .	if \\n(.t<\\n(dn \
@@ -92,6 +94,7 @@
 .		nr keep-type 2 
 .	\}
 .\}
+.if \\n[keep-nospace] .ns
 .if \\n[keep-type]=0 \{\
 .	nf
 .	keep-div
