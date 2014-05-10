@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#MDTMACPATH=/home/sitkarev/Projects/git/mdroff/tmac
-MDTMACPATH="tmac/"
+MDTMACPATH=/home/sitkarev/Projects/git/mdroff/tmac
+#MDTMACPATH="tmac/"
 reffile="/tmp/.mdroff-ref$$"
 tocfile="/tmp/.mdroff-toc$$"
 pgnfile="/tmp/.mdroff-pgn$$"
@@ -196,7 +196,7 @@ nofigures && /^\.FG / && $2 != "-box" {
 				}
 				if ($i == QUOTE) {
 					quote = 0
-					line = line " "
+					#line = line " "
 					break
 				}
 				line = line $i
@@ -217,7 +217,7 @@ nofigures && /^\.FG / && $2 != "-box" {
 				}
 				if ($i == QUOTE) {
 					quote = 1
-					if (!sep)
+					if (!sep && line)
 						line = line " "
 					sep = 0
 					break
