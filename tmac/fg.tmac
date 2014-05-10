@@ -63,6 +63,11 @@
 .el \
 \&\\*[FGCAPBG] \\*[fg-number]\\*[FGNRSEP]
 .sp 1.2v
-.ns
+\!.F%
 .KE
+..
+.\"	F% -- inhibit space output after figure
+.de F%
+.ie '\\n(.z'' .ns
+.el \!.F%
 ..
