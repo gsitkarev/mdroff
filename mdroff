@@ -1,7 +1,7 @@
 #!/bin/sh
 
-MDTMACPATH=/home/sitkarev/Projects/git/mdroff/tmac
-#MDTMACPATH="tmac/"
+#MDTMACPATH=/home/sitkarev/Projects/git/mdroff/tmac
+MDTMACPATH="tmac/"
 reffile="/tmp/.mdroff-ref$$"
 tocfile="/tmp/.mdroff-toc$$"
 pgnfile="/tmp/.mdroff-pgn$$"
@@ -174,7 +174,7 @@ nofigures && /^\.FG / && $2 != "-box" {
 	if (level <= 2) {
 		if (!appendix)
 			printf ".tm NH:\t\\*[HS]\t\\n[%]\n"
-		else
+		else if (level == 1)
 			printf ".tm NH:\\tA\\*[HS]\t\\n[%]\n"
 	}
 
