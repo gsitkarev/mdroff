@@ -137,4 +137,29 @@
 .if d keep-float \c
 'bp
 ..
+.\"
+.\"	EL -- adds extra line to the page
+.\"
+.de pg@extraline
+.ie \\n[fn-count]=0 \{\
+.	nr pg-footer +\\n(VSp
+.	ch fn@fx -\\n(FMu+\\n(VSp
+.	ch pg@fo \\n[pg-footer]u
+.\}
+.el \{\
+.	nr pg-footer +\\n(VSp
+.	ch pg@fo
+.	ch fn@fx
+.	wh \\n[pg-footer]u pg@fo
+.	wh 100i fn@fx
+.	wh -\\n(FMu+\\n(VSp fn@fx
+.\}
+.if \n(DB \{\
+.	tm Extra line inserted at page \\n%...
+.	tm ======================
+.	ptr
+.	tm End of traps printout
+.\}
+..
 .als TT pg@titles
+.als EL pg@extraline
