@@ -66,8 +66,11 @@
 \!.F%
 .KE
 ..
+.de FG-post-hook
+..
 .\"	F% -- inhibit space output after figure
 .de F%
-.ie '\\n(.z'' .ns
+.ie '\\n(.z'' \
+.	ns
 .el \!.F%
 ..

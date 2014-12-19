@@ -23,7 +23,7 @@
 ..
 .de eq@start
 .if '\\n(.z'eq-div' \{\
-.	tm "\\(.F:\\(.c: EQ: extraneous EQ request"
+.	tm \\(.F:\\(.c: EQ: extraneous EQ request"
 .	return
 .\}
 .br
@@ -50,9 +50,9 @@
 \\*[eq-div]
 .	mk eq-vend
 .	if !'\\*[eq-label]'' \{\
-.		sp -(\n[dn]u/2u+0.5v)
+.		sp -(\\n[dn]u/2u+0.5v)
 .		in 0
-.		ta \n(.luR
+.		ta \\n(.luR
 \t\\*[eq-label]
 .	\}
 .	ev
@@ -60,5 +60,14 @@
 .\}
 .rm eq-div
 ..
+.\"	These run-once macroses set aliases at first EQ/EN pair to
+.\"	prevent early break, before cover page is output.
+.\"	
+.de EQ
+.rm EQ
 .als EQ eq@start
+..
+.de EN
+.rm EN
 .als EN eq@end
+..

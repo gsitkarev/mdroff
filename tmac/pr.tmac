@@ -3,10 +3,10 @@
 .\"
 .\"
 .
+.\"	additional actions after heading
 .am HN-post-hook
-.nr pr-heading-indent 1
+.nr pr-after-heading 1
 ..
-.
 .de pr@push
 .nr @n \\n[pr@\\n[.ev]:il]
 .nr pr@\\n[.ev]:\\n[@n]:ri \\n[pr@\\n[.ev]:ri]
@@ -56,35 +56,34 @@
 ..
 .de pr@line
 .pr@new 0 0
-.ne 1.5v
+.\"ne 1.5v
 ..
 .de pr@normal
 .pr@new 0 0
 .ie '\\n[.ev]'0' \{\
-.	ie \\n[pr-heading-indent]&\\n[HI]>0 \
+.	ie \\n[pr-after-heading]&\\n[HI]>0 \
 .		ti +\\n[HI]u
 .	el \
 .		ti +\\n[PI]u
-.	nr pr-heading-indent 0
+.	nr pr-after-heading 0
 .\}
 .el \
 .	ti +\\n[PI]u
-.ne (\\n[PNHANG]-0.5)v
+.ne \\n[PNHANG]v+0.5v
 ..
 .de pr@quoted
-.nr pr-heading-indent 0
+.nr pr-after-heading 0
 .pr@new \\n[PQ] \\n[PQ]
 .ti +\\n[PI]u
-.ne (\\n[PNHANG]-0.5)v
+.ne \\n[PNHANG]v+0.5v
 ..
 .de pr@example
-.nr pr-heading-indent 0
+.nr pr-after-heading 0
 .pr@new \\n[PI] 0
 .nf
-.ne (\\n[PNHANG]-0.5)v
+.ne \\n[PNHANG]v+0.5v
 ..
 .de pr@indented
-.nr pr-heading-indent 0
 .if !\\n[pr@\\n[.ev]:ip] \
 .	nr pr@\\n[.ev]:ip \\n[PI]
 .if !'\\$2'' \
@@ -103,6 +102,7 @@
 .if \\n[dl]+1n>=\\n[pr@\\n[.ev]:ip]
 .	br
 .rm pr@div-marker
+.nr pr-after-heading 0
 .ne 1.5v
 ..
 .de pr@moveright
