@@ -1,0 +1,30 @@
+.\"	lib.tmac -- common library routines
+.\"
+.\"
+.
+.\"	lib@subfield -- extract subfield from string
+.\"
+.\"	Usage:
+.\"		lib@subfield STRING NFIELD
+.\"
+.de lib@subfield
+.nr \\$0-p 0
+.nr \\$0-f 0
+.ds \\$0-s
+.ds \\$0-c \\*[\\$1]
+.substring \\$0-c \\n[\\$0-p] \\n[\\$0-p]
+.while !'\\*[\\$0-c]'' \{\
+.	ie '\\*[\\$0-c]';' \
+.		nr \\$0-f +1
+.	el \{\
+.		if \\n[\\$0-f]=\\$2 \
+.			as \\$0-s \\*[\\$0-c]
+.	\}
+.	if \\n[\\$0-f]>\\$2 \
+.		break
+.	nr \\$0-p +1
+.	ds \\$0-c \\*[\\$1]
+.	substring \\$0-c \\n[\\$0-p] \\n[\\$0-p]
+.\}
+.ds \\$1 \\*[\\$0-s]
+..

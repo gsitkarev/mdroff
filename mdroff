@@ -219,13 +219,17 @@ nofigures && /^\.FG / && $2 != "-box" {
 
 	if (!appendix) {
 		if (level == 1) {
+			 #".ds toc-ps \\*[TOCFONTSIZE]\n" \
+			 #".lib@subfield toc-ps 0\n" \
 			if ((pgno = tocpg[HS]) == "")
 				pgno = "???"
+			print ".ds toc-ps \\*[TOCFONTSIZE]\n" \
+			      ".lib@subfield toc-ps 0" >>tocfile
 			print ".XS\n" \
 			      ".sp 0.3v\n" \
 			      ".XA " pgno "\n" \
-			      "\\s+4\\\n" \
-			      ".XM \\s+4" HS "\\s0\n" \
+			      "\\s\\*[toc-ps]\\\n" \
+			      ".XM \\s\\*[toc-ps]" HS "\\s0\n" \
 			      "\\&" line "\n" \
 			      "\\s0\n" \
 			      ".XE\n" \
@@ -235,9 +239,12 @@ nofigures && /^\.FG / && $2 != "-box" {
 		} else if (level == 2) {
 			if ((pgno = tocpg[HS]) == "")
 				pgno = "???"
+			print ".ds toc-ps \\*[TOCFONTSIZE]\n" \
+			      ".lib@subfield toc-ps 1" >>tocfile
 			print ".XS\n" \
 			      ".XA " pgno " 12n\n" \
-			      ".XM " HS "\n" \
+			      "\\s\\*[toc-ps]\\\n" \
+			      ".XM \\s\\*[toc-ps]" HS "\\s0\n" \
 			      "\\&" line "\n" \
 			      ".XE" >> tocfile
 		}
