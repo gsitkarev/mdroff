@@ -390,7 +390,7 @@ do
 	R) GROFFOPTS="$GROFFOPTS -R";;
 	T) case $OPTARG in
 		ps)  ;;
-		pdf) gropost="grops | ps2pdf -dUseCIEColor=true -dPDFSETTINGS=/printer -";;
+		pdf) gropost="grops | ps2pdf -dEmbedAllFonts=false -dUseCIEColor=true -dPDFSETTINGS=/printer -";;
 		*)   usage; exit 1;;
 	   esac;;
 	*) usage; exit 1;;
@@ -408,7 +408,7 @@ mkfifo -m660 "$FIFO" || { echo "failed to create FIFO" >&2; exit 1; }
 
 if [ "$LC_ALL" = "ru_RU.UTF-8" -o "$LANG" = "ru_RU.UTF-8" ]; then
 	GROFFOPTS="${GROFFOPTS} -mru"
-	precmdpipe="soelim \"$@\" | iconv -futf8 -tkoi8r | preconv -eKOI8R | $precmdpipe"
+	precmdpipe="soelim \"$@\" | iconv -f UTF-8 -t koi8-r | preconv -e koi8-r | $precmdpipe"
 else
 	precmdpipe="soelim \"$@\" | $precmdpipe"
 fi
