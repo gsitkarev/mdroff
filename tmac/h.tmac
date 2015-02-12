@@ -12,6 +12,7 @@
 .\"	HS		heading number, like `1.3.', `2.1.4.'
 .\"	HS-NO-DOT	same as HS without trailing dot
 .\"	HA		full heading title
+.\"	HT		header type, numbered heading or appendix (H or A)
 .\"
 .\"	Configuration strings:
 .\"
@@ -20,6 +21,15 @@
 .\"
 .\"		if defined	print dot at the end
 .\"		if not defined	do not print dot
+.\"
+.\"	The following strings give semicolon separated lists of space:
+.\"
+.\"	HSPACE1		before numbered heading;
+.\"	HSPACE2		after numbered heading;
+.\"	ASPACE1		before appendix heading;
+.\"	ASPACE2		after appendix heading;
+.\"	USPACE1		before unnumbered heading;
+.\"	USPACE2		after unnumbered heading.
 .\"
 .ds HN-PRINT-DOT
 .
@@ -260,7 +270,6 @@
 .ds HN-fp \\$1-1
 .ds HN-sp \\*[USPACE2]
 .lib@subfield HN-sp \\n[HN-fp]
-.tm U SP=\\*[HN-sp]
 .HN-pre-hook
 .ds HA "\\$2
 .nr U\\$1 +1

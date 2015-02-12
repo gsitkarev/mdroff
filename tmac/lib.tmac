@@ -5,7 +5,15 @@
 .\"	lib@subfield -- extract subfield from string
 .\"
 .\"	Usage:
-.\"		lib@subfield STRING NFIELD
+.\"		lib@subfield STRING FIELDNR
+.\"
+.\"	STRING is a semicolon (;) separated list of subfields.
+.\"
+.\"	Example:
+.\"		.ds XX abc;def;geh
+.\"		.lib@subfield XX 1
+.\"		.\" will print `def' on stderr
+.\"		.tm \*(XX
 .\"
 .de lib@subfield
 .nr \\$0-p 0
