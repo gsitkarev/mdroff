@@ -8,6 +8,7 @@
 .de pg@init
 .pg@reset
 .wh 0 pg@first
+.em pg@last
 .nr pg@print-header (-1)
 .nr pg@print-footer (-1)
 .nr pg@print-header-c \\n[pg@print-header]
@@ -63,6 +64,12 @@
 .el \
 .	pg@hd
 .rm pg@first
+..
+.\"	pg@last -- invoked by end of input file
+.de pg@last
+.br
+.if d keep-float \c
+'bp
 ..
 .\"	pg@line -- draw line-width horizontal line
 .de pg@line
@@ -135,7 +142,6 @@
 .	nr pg@print-footer 2
 .nr pg@print-footer-c \\n[pg@print-footer]
 .ev
-.if d keep-float \c
 'bp
 ..
 .\"

@@ -15,6 +15,14 @@
 .\" caption figure number separator (usually dot or colon)
 .if !d FGNRSEP .ds FGNRSEP :
 .
+.\" This append macro in PSPIC usage is recommended by groff_tmac(5).
+.\" We use it here becase FG always uses PSPIC inside a diversion.
+.am PSPIC
+.	vpt 0
+\h'(\\n[ps-offset]u + \\n[ps-deswid]u)'
+.	sp -1
+.	vpt 1
+..
 .\"	F# -- print figure label data to stderr
 .\"
 .\"	This macro is used within figures in floating keeps.

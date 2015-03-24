@@ -167,7 +167,7 @@ $
 .FE
 В связи со сравнительно низким уровнем языка многие случаи
 неправильного использования опасных элементов не обнаруживаются
-и не могут быть обнаружены ни при ко мпиляции,
+и не могут быть обнаружены ни при компиляции,
 ни во время исполнения.
 Это часто приводит к непредсказуемому поведению программы.
 Иногда в результате неграмотного использования элементов языка
@@ -178,9 +178,9 @@ $
 .sp 0.5v
 .in \n[PI]u
 .nf
-.CW
 .ta T 2m
-#include <stdio.h>
+.CW
+\&#include <stdio.h>
 
 int
 main(void)
@@ -274,41 +274,3 @@ Computer Science Technical Report 65, Bell Laboratories, December 1977.
 очень часто требуется использовать динамическое выделение.
 Массивы переменного размера \*- самый распространённый пример
 такого использования памяти.
-.EQ
-delim $$
-.EN
-.br
-.nf
-.di eq-div
-.EQ
-F(s) = mark int from {- inf} to {+ inf} f(t) e sup {-st} dt =
-.EN
-.sp 0.5v
-.EQ
- = int from {- inf} to {+ inf} f(t) e sup {- ( j sigma + omega ) t } dt =
-.EN
-.sp 0.5v
-.EQ
- = F( sigma , omega ) ^.
-.EN
-.br
-.di
-.chop eq-div
-.\"tm dn=\n[dn] dl=\n[dl]
-.nf
-.mk eq-vstart
-.ce 1000
-.\"in +(\n(.lu-\n(dlu)/2uL
-\*[eq-div]
-.mk eq-vend
-.\"tm eq-vstart=\n[eq-vstart] eq-vend=\n[eq-vend]
-.sp |\n[eq-vstart]u
-.sp \n[dn]u/2u
-.in 0
-.ta \n(.luR
-	(1.1)
-.fi
-.rm eq-div
-.sp |\n[eq-vend]u
-.PP
-The text continues here.

@@ -16,14 +16,19 @@
 .nr LL 21c-\n(PO-1c
 .\"nr PI 1.5c
 .
+.ss 16 0
+.
 .\"	quote open
 .ds Q \(Fo
 .\"	quote close
 .ds U \(Fc
-.\"	em-dash  
-.ds - \(em
-.\"	en-dash
-.ds _ \(en
+.\" Dash to use inside the text with en spaces (half-space) on each side.
+.ds - \~\h'-\w'\~'u'\*|\(em\*| \h'-\w' 'u'
+.\" Dash to use as a mark in the list.
+.ds _ \(em\ 
+.\" Fixed two-point space.
+.ds ! \h'2p'
+.ds | \h'\\n(.sp/2u'
 .
 .di doc-cover
 .ev syktsu-cover
@@ -43,7 +48,7 @@
 Допустить к защите
 Зав. кафедрой прикладной математики,
 д. т. н., профессор
-\l'8m' В.\|Л.\|Никитенков
+\l'8m' В. Л.\*|Никитенков
 \*Q\l'2m'\*U\l'6m' \*(YE года
 .rj
 .
@@ -60,13 +65,13 @@
 .rj 100
 Научный руководитель,
 к. т. н., доцент кафедры ПМиИТО
-\l'8m' А.\|К.\|Трезвый
+\l'8m' А. К.\*|Трезвый
 \*Q\l'2m'\*U\l'6m' \*(YE года
 .rj
 .sp 1v
 .rj 100
 Исполнитель, студент 123 группы
-\l'8m' В.\|Г.\|Беспределов
+\l'8m' В. Г.\*|Беспределов
 \*Q\l'2m'\*U\l'6m' \*(YE года
 .rj
 .sp |\n(.pu-\n(FMu-1.5v

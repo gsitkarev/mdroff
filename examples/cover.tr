@@ -1,4 +1,9 @@
-.so syktsu.tmac
+.\"
+.\"	Run this example with the following command:
+.\"
+.\" 	  ./mdroff -Tps -e examples/cover.tr >/tmp/out.ps
+.\"
+.so contrib/syktsu.tmac
 .TC
 .
 .U1 "Введение"
