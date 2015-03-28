@@ -390,7 +390,7 @@ do
 	R) GROFFOPTS="$GROFFOPTS -R";;
 	T) case $OPTARG in
 		ps)  ;;
-		pdf) gropost="grops | ps2pdf -dEmbedAllFonts=false -dUseCIEColor=true -dPDFSETTINGS=/printer -";;
+		pdf) gropost="grops | ps2pdf -dUseCIEColor=true -dPDFSETTINGS=/printer -";;
 		*)   usage; exit 1;;
 	   esac;;
 	*) usage; exit 1;;
