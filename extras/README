@@ -5,4 +5,8 @@ devps.tas - cyrrilic font metrics for groff.
 koi8-r.tmac, ru.tmac - macros files for groff for cyrillic support.
 ruhyphal.tex - as in a name, it is hyphenation description for cyrillic words.
 
-koi8-r.tmac, ru.tmac and ruhyphal.tex shoul be put in /usr/share/groff/site-tmac or wherever site-tmac directory for groff is located.
+koi8-r.tmac, ru.tmac and ruhyphal.tex should be put in /usr/share/groff/site-tmac or wherever site-tmac directory for groff is located.
+
+Fontmap - file, which maps additional font-files for Ghostscript. In most linux distribution there is not need in this file, because when installing *gsfonts* package, package itself creates this mapping, so it is quite hided from user. 
+	But, for example, in Cygwin (for current moment) this mapping is not created, so we need to handle it for our own. In this file "typical" Type1 font-files are assumed to be located in /usr/share/fonts/Type1/.
+	And, as for Cygwin, Ghostscript is not looking for fontmap-file in /var/lib/ghostscript/fonts, so you can put this file in /usr/share/fonts/Type1.
