@@ -1,5 +1,3 @@
-CyrPS.tar and CyrPS-afm.tar - cyrrilic font metrics for GhostScript.
-
 devps.tas - cyrrilic font metrics for groff.
 
 koi8-r.tmac, ru.tmac - macros files for groff for cyrillic support.
